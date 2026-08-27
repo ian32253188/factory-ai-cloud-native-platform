@@ -44,3 +44,19 @@ def test_report_html_generation():
     response = client.get("/api/v1/reports/html/K-001")
     assert response.status_code == 200
     assert "Market AI 商業市場調查研報" in response.text
+from app.services.ai_sentiment import ai_sentiment
+
+def test_ai_sentiment_engine_critical_threshold():
+    # 模擬高負面聲量數據
+    mock_data = {
+        "keyword": "測試產品",
+        "sentiment_breakdown": {
+            "sentiment_index": 0.05,
+            "negative_pct": 30.0
+        }
+    }
+    status, score, label, advice = ai_sentiment.analyze_market_trend(mock_data)
+    
+    # 驗證 AI 引擎是否能精準觸發公關危機警告
+    assert status == "critical"
+    assert "公關危機警告" in label

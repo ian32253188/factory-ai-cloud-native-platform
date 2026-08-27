@@ -19,6 +19,10 @@
 
 ## 🗓️ 30 天每日詳細學習與實作路線圖 (30-Day Masterclass Roadmap)
 
+> 📘 **完整詳細課綱請參閱 [`docs/learning-roadmap.md`](docs/learning-roadmap.md)**
+> 
+> 每天課程包含 **6 大完整區塊**：📖 核心觀念（3~5 個概念深度講解）→ 📚 延伸知識（業界實戰案例）→ 🔨 實作練習（3 道漸進式練習題 A/B/C）→ 🧪 測試驗證（pytest 測試案例 + 完成條件）→ 🗣️ 面試問答（5~8 題附標準答案）→ 📎 參考資源
+
 ### 📌 第一週：軟體工程基本功、12-Factor 與生產級單體架構
 
 #### Day 01 — HTTP, REST API, FastAPI & Git 工作流
