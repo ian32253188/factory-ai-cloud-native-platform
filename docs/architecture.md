@@ -1,160 +1,85 @@
-# Architecture Evolution
+# 系統架構演進 (Architecture Evolution)
 
-The architecture is intentionally evolutionary. Each stage exists to teach *why* the next stage is needed.
+本專案的架構設計採取**漸進式演進 (Evolutionary Architecture)** 策略。每個階段皆旨在示範如何從單體架構，演進為支援商業市場調查與網路輿情分析的高擴展性雲原生 SaaS 平台。
 
-## Stage 1 — Production-shaped monolith
+---
+
+## 階段 1 — 生產級單體架構 (Production-Shaped Monolith)
 
 ```text
-Client
+Client (客戶端/分析師)
   |
-FastAPI
+FastAPI (網頁框架)
   |
 Router -> Service -> Repository
                      |
-                 PostgreSQL
+                 PostgreSQL (市場調查與聲量資料庫)
 ```
 
-Learn:
-- HTTP/REST
-- layering and dependency boundaries
-- SQL and transactions
-- testing
-- configuration
-- refactoring
+**學習重點 (Key Learnings)**:
+- HTTP / REST API 設計規範與狀態碼
+- 分層架構 (Layering) 與依賴邊界 (Dependency Boundaries)
+- SQL 查詢與事務管理 (Transactions)
+- 自動化測試 (Unit / Integration Tests)
+- 12-Factor 環境配置 (Configuration Management)
 
-Why start here?
-Because distributed systems add network latency, partial failure, deployment complexity, observability needs, and operational cost. A clean monolith is the baseline from which those tradeoffs become visible.
+---
 
-## Stage 2 — Containerized application
+## 階段 2 — 容器化與商業化 SaaS 模組 (Containerized Application & SaaS Core)
 
 ```text
 Docker Compose
-├── API
-├── PostgreSQL
-└── Redis
+├── API (FastAPI Gateway)
+├── PostgreSQL (主資料庫)
+├── Redis (熱門關鍵字快取與 Rate Limit)
+└── Stripe Billing Integration
 ```
 
-Learn:
-- image vs container
-- networking and service discovery
-- persistent volumes
-- runtime configuration
-- caching
+**學習重點 (Key Learnings)**:
+- 多租戶隔離 (Multi-Tenancy Isolation)
+- Stripe 金流 API 與按用量計費 (Usage-based Billing)
+- API Key 鑑權與權限控管 (RBAC)
+- 容器化部署與 Redis 快取策略
 
-## Stage 3 — First service extraction
+---
+
+## 階段 3 — 數據收集與 AI 商業情報 (Data Collection & AI Analytics Platform)
 
 ```text
-             +------------------+
-Devices ---> | Ingestion Service|
-             +---------+--------+
-                       |
-                  PostgreSQL
-                       |
-                   Core API
+Public APIs / Web Scraper -> Feature Pipeline -> PostgreSQL
+                                  |                 |
+                                  v                 v
+                       NLP Sentiment Engine ---> Executive PDF Report Generator
 ```
 
-Extract only when there is a concrete reason: independent scaling, failure isolation, or a clearly separate responsibility.
+**學習重點 (Key Learnings)**:
+- 網路公開數據抓取 (Scraper Ingestion)
+- AI NLP 情感分析與負面輿情預警
+- 自動化 PDF 商業市場研報生成 (Report Generator)
 
-Learn:
-- service boundaries
-- API contracts
-- timeouts/retries
-- idempotency
-- distributed failure
+---
 
-## Stage 4 — Data + AI platform
-
-```text
-Ingestion -> PostgreSQL -> Feature Pipeline -> MinIO
-                               |              |
-                               v              v
-                           Training ------> Model
-                                              |
-                                              v
-                                         ML Service
-```
-
-Learn:
-- batch pipeline
-- object storage
-- reproducibility
-- model lifecycle
-- online inference
-
-## Stage 5 — Kubernetes
+## 階段 4 — Kubernetes 叢集與 SRE 可觀測性 (Kubernetes & SRE)
 
 ```text
 Kubernetes Cluster
-├── ingestion Deployment + Service
-├── api Deployment + Service
-├── ml Deployment + Service
-├── worker Deployment
+├── Gateway Deployment + Service
+├── Scraper Worker Deployment
+├── AI Analytics Deployment
 ├── ConfigMaps / Secrets
-└── HPA / probes / resource controls
+└── HPA (自動擴縮) / Health Probes (健康檢查)
 ```
 
-Learn:
-- desired state
-- reconciliation
-- scheduling
-- service discovery
-- health probes
-- resource management
-- autoscaling
+---
 
-## Stage 6 — SRE and observability
-
-```text
-Apps -> /metrics -> Prometheus -> Grafana
-                    |
-                    +-> Alert rules
-```
-
-Initial SLIs:
-- HTTP availability
-- p95 request latency
-- server error ratio
-- telemetry ingestion success ratio
-- ML inference latency/error ratio
-
-Example SLOs for the learning environment:
-- API successful-request ratio >= 99.5% over 7 days
-- p95 API latency < 300 ms
-- telemetry ingestion success >= 99.9%
-
-The exact target values are less important than learning how to calculate, monitor, and respond to them.
-
-## Stage 7 — CI/CD and GitOps
+## 階段 5 — CI/CD 與 GitOps 自動化 (CI/CD & GitOps)
 
 ```text
 Developer -> GitHub PR
                |
-          GitHub Actions
-      lint -> test -> image
+          GitHub Actions (Lint -> Test -> Build Image)
                |
-              Git
+            Argo CD (GitOps Controller)
                |
-            Argo CD
-               |
-          Kubernetes
+          Kubernetes Cluster
 ```
-
-Learn:
-- immutable artifacts
-- quality gates
-- desired-state deployment
-- rollback
-- reconciliation
-
-# Architectural Decision Questions
-
-Before introducing a technology, answer:
-
-1. What problem do we currently have?
-2. Why can't the current design solve it sufficiently?
-3. What complexity does the new technology add?
-4. How will we test it?
-5. How will we observe it in production?
-6. How will we recover when it fails?
-
-These questions are more valuable in interviews than simply listing technologies.

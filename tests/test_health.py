@@ -11,5 +11,5 @@ def test_health_check_returns_ok() -> None:
     assert response.status_code == 200
     payload = response.json()
     assert payload["status"] == "ok"
-    assert payload["service"] == "Factory AI Cloud-Native Platform"
+    assert "Market Intelligence" in payload["service"]
     assert payload["environment"] == "development"

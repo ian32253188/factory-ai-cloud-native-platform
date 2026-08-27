@@ -1,349 +1,201 @@
-# 30-Day / 120-Hour Learning Roadmap
+# 30 天頂尖職缺對照實戰學習路線圖 (30-Day Masterclass Roadmap)
 
-This roadmap uses a **learn → build → verify → explain** loop. Assume about 4 hours per day.
-
-## Rule for every day
-
-1. Learn the minimum theory needed for today's feature.
-2. Implement one observable behavior in this repository.
-3. Verify it with tests, commands, or metrics.
-4. Write a short note explaining *why* the technology exists and what problem it solved.
+本路線圖遵循 **學習 (Learn) ➔ 實作 (Build) ➔ 驗證 (Verify) ➔ 解說 (Explain)** 的閉環學習流程，全面對照 5 大頂尖職缺（Software Engineer, Cloud-Native Architect, Factory Automation / Scalable Platform, AI/MLOps Platform Engineer, Data Infrastructure Engineer）要求。
 
 ---
 
-## Week 1 — Software Engineering Foundations (28h)
+## 📌 30 天每日詳細學習內容與驗證項目
 
-### Day 1 — HTTP, REST, FastAPI, Git (4h)
-**Learn (1.5h)**
-- client/server model
-- IP, port, URL, HTTP request/response
-- HTTP methods: GET, POST, PUT, PATCH, DELETE
-- status codes: 2xx, 4xx, 5xx
-- REST resources and idempotency
-- Python virtual environments, modules, type hints
-- Git working tree, commit, branch
+### 第一週：軟體工程基本功、12-Factor 與生產級單體架構
 
-**Build (2h)**
-- run the FastAPI application
-- inspect `/docs`
-- call `/health`
-- create `/api/v1/machines` GET endpoint with an in-memory list
+#### Day 01 — HTTP, REST API, FastAPI & Git 工作流
+- **📖 學習內容 (Learn)**: Client/Server 模型、IP/Port/URL、HTTP Methods (GET/POST/PUT/DELETE)、Status Codes (2xx/4xx/5xx)、REST 冪等性、FastAPI 工廠模式 (`create_app`)。
+- **🔨 程式實作 (Build)**: 實作 `/health` 端點，建立 Git 倉庫並配置 `.gitignore` 與預備 CI 本地驗證環境。
+- **✅ 驗證方式 (Verify)**: 執行 `uvicorn app.main:app` 並發送 `curl http://127.0.0.1:8000/health` 回傳 `200 OK` 及 JSON 配置。
+- **🗣️ 面試考點 (Explain)**: 說明 Client 與 Server 的互動流程，以及為何 GET 請求不應產生狀態副作用。
 
-**Verify & explain (0.5h)**
-- run pytest
-- explain why `GET /machines` should not mutate state
+#### Day 02 — OOP 物件導向、FP 函數式風格與系統分層
+- **📖 學習內容 (Learn)**: Class vs Object、封裝、函數式 Immutable Data、Router ➔ Service ➔ Repository 職責分離與依賴反轉。
+- **🔨 程式實作 (Build)**: 設計 `MarketKeyword` 與 `ProductMetric` 領域模型，實現分層介面。
+- **✅ 驗證方式 (Verify)**: 執行 `pytest tests/test_market_saas.py` 驗證 Router 與 Service 模組獨立解耦。
+- **🗣️ 面試考點 (Explain)**: 說明為何 API Router 層不應直接包含業務邏輯或資料庫操作。
 
-### Day 2 — Python OOP and application layering (4h)
-**Learn**
-- class vs object
-- encapsulation
-- composition vs inheritance
-- interface / dependency boundary
-- separation of concerns
-- controller/router → service → repository
+#### Day 03 — 關聯式 SQL 與 12-Factor 配置管理
+- **📖 學習內容 (Learn)**: PostgreSQL Table/PK/FK/ACID 事務與 Index 索引優化；12-Factor 的 Config 與 Code 分離原則。
+- **🔨 程式實作 (Build)**: 使用 `SQLAlchemy` + `pydantic-settings` 讀取 `.env` 環境變數。
+- **✅ 驗證方式 (Verify)**: 修改 `.env` 的 `FACTORY_ENVIRONMENT` 變數，重啟後存取 `/health` 驗證配置隔離。
+- **🗣️ 面試考點 (Explain)**: 說明硬編碼配置在不同環境 (Dev/Staging/Prod) 部署時所帶來的安全與維護風險。
 
-**Build**
-- Machine domain model
-- MachineService
-- in-memory MachineRepository
-- router calls service instead of accessing data directly
+#### Day 04 — 測試金字塔 (Testing Pyramid & TDD)
+- **📖 學習內容 (Learn)**: Unit vs Integration vs E2E 測試、Arrange/Act/Assert 結構、Mocking 技巧與 Code Coverage 覆蓋率。
+- **🔨 程式實作 (Build)**: 撰寫 `pytest` 套件、FastAPI TestClient API 整合測試。
+- **✅ 驗證方式 (Verify)**: 執行 `python -m pytest`，確保單元測試與 API 整合測試 100% 綠燈通過。
+- **🗣️ 面試考點 (Explain)**: 說明單元測試與整合測試在發掘 Bug 成本上的差異。
 
-**Verify**
-- unit tests for service
-- explain why router should not contain business logic
+#### Day 05 — 重構 (Refactoring) 與 SOLID 原則
+- **📖 學習內容 (Learn)**: Single Responsibility, Open/Closed, Interface Segregation 原則與 Code Smell 識別。
+- **🔨 程式實作 (Build)**: 重構關鍵字查詢與數據存取邏輯，提高程式碼內聚度與可維護性。
+- **✅ 驗證方式 (Verify)**: 執行 `pytest` 驗證重構前後外部 API 行為與回傳格式 100% 一致。
+- **🗣️ 面試考點 (Explain)**: 說明「重構 (Refactoring)」與「重新編寫 (Rewriting)」在工程實踐上的區別。
 
-### Day 3 — SQL and relational data modeling (4h)
-**Learn**
-- table, row, primary key, foreign key
-- normalization basics
-- SELECT/INSERT/UPDATE/DELETE
-- index and its tradeoff
-- transaction and ACID
-- ORM vs raw SQL
+#### Day 06 — 演算法、資料結構與記憶體限流 (Algorithms)
+- **📖 學習內容 (Learn)**: 時間/空間複雜度 (Big-O)、Sliding Window 限流演算法、LRU Cache 與 Hash Table 機制。
+- **🔨 程式實作 (Build)**: 手寫 Sliding Window 記憶體限流器中間件。
+- **✅ 驗證方式 (Verify)**: 短時間連續發送 101 次請求，驗證精準拋出 `429 Too Many Requests`。
+- **🗣️ 面試考點 (Explain)**: 說明 Sliding Window 與 Token Bucket 兩種限流演算法的優缺點。
 
-**Build**
-- PostgreSQL schema for machines and telemetry
-- SQLAlchemy models
-- repository backed by PostgreSQL
-
-**Verify**
-- integration test against test database
-- inspect generated SQL
-
-### Day 4 — Testing and software quality (4h)
-**Learn**
-- test pyramid
-- unit vs integration vs functional vs E2E
-- arrange/act/assert
-- mocking and when not to mock
-- code coverage limits
-
-**Build**
-- unit tests for business rules
-- API tests with FastAPI TestClient
-- database integration tests
-
-**Verify**
-- intentionally introduce a bug and ensure tests catch it
-
-### Day 5 — Refactoring and design principles (4h)
-**Learn**
-- cohesion and coupling
-- SOLID overview
-- dependency inversion
-- DRY vs premature abstraction
-- code smell
-- refactoring vs rewriting
-
-**Build**
-- refactor machine and telemetry logic
-- introduce interfaces/protocols only where useful
-
-**Verify**
-- tests stay green before and after refactor
-
-### Day 6 — Configuration and Twelve-Factor principles (4h)
-**Learn**
-- config vs code
-- environment variables
-- stateless processes
-- backing services
-- logs as event streams
-- dev/prod parity
-
-**Build**
-- environment-based configuration
-- `.env.example`
-- structured application settings
-
-**Verify**
-- change behavior using environment variables without editing code
-
-### Day 7 — Week 1 architecture review (4h)
-**Learn**
-- monolith vs distributed system
-- latency, partial failure, network boundaries
-- why microservices are not automatically better
-
-**Build**
-- complete production-shaped monolith
-- architecture diagram v1
-
-**Explain**
-- 10-minute mock interview: explain current architecture and tradeoffs
+#### Day 07 — 第一週單體架構驗收與 Code Review
+- **📖 學習內容 (Learn)**: Monolith 演進至微服務的 Tradeoffs (延遲、網路邊界、維護成本)。
+- **🔨 程式實作 (Build)**: 完成生產級單體市場調查 API 系統，產出架構圖 v1，模擬 Code Review 檢查機制。
+- **✅ 驗證方式 (Verify)**: 執行全套端到端流轉，驗證各分層運作順暢。
+- **🗣️ 面試考點 (Explain)**: 說明為何初創專案適合從單體架構開始而非直接構建微服務。
 
 ---
 
-## Week 2 — Containers, Data, Microservices (28h)
+### 第二週：商業多租戶、金流計費、數據管道與微服務拆分
 
-### Day 8 — Linux process and networking basics (4h)
-Learn processes, signals, ports, localhost, DNS, TCP basics, environment variables, file permissions.
+#### Day 08 — 多租戶隔離 (Multi-Tenancy) & B2B 授權
+- **📖 學習內容 (Learn)**: Multi-Tenant 租戶隔離模式、API Key 發放與權限控管 (RBAC)。
+- **🔨 程式實作 (Build)**: 建立 `Tenant` 與 `SubscriptionTier` 模型，實作 `X-API-Key` 鑑權中間件。
+- **✅ 驗證方式 (Verify)**: 帶入無效 API Key 發送請求，驗證 `401 Unauthorized` 攔截，且不同 Tenant 數據完全隔離。
+- **🗣️ 面試考點 (Explain)**: 說明如何確保 B2B SaaS 多租戶架構下資料不會發生跨租戶滲漏。
 
-Build and debug the app from command line only.
+#### Day 09 — Stripe 金流整合與 Usage-Based Billing
+- **📖 學習內容 (Learn)**: 按量計費 (Usage-Based Billing) 商業模式、Stripe Webhook 處理機制。
+- **🔨 程式實作 (Build)**: 建立 `/api/v1/billing/subscribe` 金流端點，達到月配額時拋出 `402 Payment Required`。
+- **✅ 驗證方式 (Verify)**: 模擬試用版配額用盡後自動封鎖，呼叫 `/subscribe` 成功提升配額與重置 API Key。
+- **🗣️ 面試考點 (Explain)**: 說明按量計費與固定訂閱制在後端計量扣額上的設計差異。
 
-### Day 9 — Docker fundamentals (4h)
-Learn image vs container, layers, Dockerfile, build context, registry, volume, network.
+#### Day 10 — Docker 容器化與最佳化 Dockerfile
+- **📖 學習內容 (Learn)**: Image vs Container、Layer 快取優化、Multi-Stage Build 多階段構建、Non-root 安全容器。
+- **🔨 程式實作 (Build)**: 編寫最小化生產級 Dockerfile 並在本地運行。
+- **✅ 驗證方式 (Verify)**: 執行 `docker build -t market-api .` 與 `docker run` 驗證容器輕量化與啟動成功。
+- **🗣️ 面試考點 (Explain)**: 說明 Docker 多階段構建 (Multi-Stage Build) 如何有效減少最終鏡像體積。
 
-Build a Docker image for the API and run it locally.
+#### Day 11 — Docker Compose & Redis 快取機制
+- **📖 學習內容 (Learn)**: 容器網路 (Bridge)、Service Discovery、Redis Cache-Aside 模式與 TTL 機制。
+- **🔨 程式實作 (Build)**: Compose 整合 API + PostgreSQL + Redis 快取熱門關鍵字聲量。
+- **✅ 驗證方式 (Verify)**: 執行 `docker-compose up`，發送二次相同查詢，驗證回應時間縮短至 <5ms (Redis 命中)。
+- **🗣️ 面試考點 (Explain)**: 說明 Cache-Aside 模式與 Cache Penetration (快取穿透) 的因應策略。
 
-### Day 10 — Docker Compose + PostgreSQL (4h)
-Learn container networking, service discovery, volumes, startup dependencies.
+#### Day 12 — 分散式 NoSQL 資料庫實務 (MongoDB / MariaDB)
+- **📖 學習內容 (Learn)**: Document-oriented NoSQL 特性、Schema-less 靈活性與查詢效能。
+- **🔨 程式實作 (Build)**: 使用 MongoDB 儲存非結構化網路貼文與評價數據。
+- **✅ 驗證方式 (Verify)**: 執行 MongoDB 存取腳本，驗證多型貼文 JSON 數據成功寫入與多維度查詢。
+- **🗣️ 面試考點 (Explain)**: 說明在什麼情境下選擇 SQL (Relational) 與 NoSQL (Document Store)。
 
-Build API + PostgreSQL with Compose.
+#### Day 13 — 大數據批次與串流管道 (Hadoop / PySpark)
+- **📖 學習內容 (Learn)**: Hadoop 生態系、MapReduce 原理、PySpark 巨量數據平行處理。
+- **🔨 程式實作 (Build)**: 編寫 PySpark 腳本進行巨量聲量數據清洗與詞頻特徵抽取。
+- **✅ 驗證方式 (Verify)**: 執行 PySpark 批次腳本，驗證巨量聲量數據成功清洗並產出詞頻特徵統計。
+- **🗣️ 面試考點 (Explain)**: 說明 Batch Processing (批次) 與 Stream Processing (串流) 的適用情境。
 
-### Day 11 — Redis and caching (4h)
-Learn cache-aside, TTL, cache invalidation, persistence tradeoffs.
-
-Add Redis for latest machine state / expensive query caching.
-
-### Day 12 — Messaging and asynchronous processing (4h)
-Learn synchronous vs asynchronous communication, queue, producer/consumer, at-least-once delivery, idempotent consumer.
-
-Implement a simple event-processing worker (Redis Streams or similar lightweight mechanism).
-
-### Day 13 — Microservice boundaries (4h)
-Learn bounded context, database-per-service idea, API contract, distributed failure, retries/timeouts.
-
-Extract telemetry ingestion from the monolith into a separate service.
-
-### Day 14 — Object storage + data pipeline (4h)
-Learn object storage, S3 concepts, batch vs stream, ETL/ELT, schema evolution.
-
-Store raw telemetry batches in MinIO and build a simple feature pipeline.
-
----
-
-## Week 3 — Kubernetes, CI/CD, SRE (36h)
-
-### Day 15 — Kubernetes mental model (4h)
-Learn cluster, control plane, node, Pod, Deployment, ReplicaSet, Service, desired state.
-
-Deploy one API to local Kubernetes (kind or minikube).
-
-### Day 16 — Kubernetes configuration (4h)
-Learn ConfigMap, Secret, namespace, labels, selectors.
-
-Move runtime configuration into Kubernetes resources.
-
-### Day 17 — Reliability primitives (4h)
-Learn liveness, readiness, startup probes; resource request/limit; graceful shutdown.
-
-Add probes and resource controls.
-
-### Day 18 — Scaling and networking (4h)
-Learn horizontal scaling, HPA, ingress/gateway basics, statelessness.
-
-Scale API replicas and generate load.
-
-### Day 19 — CI fundamentals (4h)
-Learn CI vs CD, pipeline, artifact, immutable build, quality gate.
-
-GitHub Actions: lint → test → build image.
-
-### Day 20 — CD and deployment strategies (4h)
-Learn rolling deployment, rollback, blue/green, canary concepts.
-
-Automate deployment to local/test K8s environment where practical.
-
-### Day 21 — Observability fundamentals (4h)
-Learn metrics/logs/traces, RED method, USE method, cardinality.
-
-Instrument request count, error count, latency, telemetry ingest count.
-
-### Day 22 — Prometheus + Grafana (4h)
-Learn scrape model, counter/gauge/histogram, PromQL basics.
-
-Create dashboard for availability, latency, throughput, errors.
-
-### Day 23 — SLI / SLO / Error Budget (4h)
-Learn SLI, SLO, SLA, error budget, burn rate.
-
-Define measurable reliability targets and document them.
+#### Day 14 — 微服務邊界拆分 (Monolith to Microservices)
+- **📖 學習內容 (Learn)**: Bounded Context 領域邊界、Database-per-Service 模式、API Contract。
+- **🔨 程式實作 (Build)**: 將「數據抓取 (Scraper Ingestion)」從單體系統拆分為獨立微服務與非同步 Worker。
+- **✅ 驗證方式 (Verify)**: 啟動 Scraper Ingestion 微服務，發送跨服務 REST 請求驗證解耦運作。
+- **🗣️ 面試考點 (Explain)**: 說明微服務拆分帶來的網路延遲與分散式事務 (Distributed Transaction) 挑戰。
 
 ---
 
-## Week 4 — AI Platform, MLOps, GitOps (28h)
+### 第三週：Kubernetes 雲原生編排、Service Mesh (Istio)、GitOps (ArgoCD) 與 SRE
 
-### Day 24 — ML lifecycle refresher (4h)
-Learn problem framing, train/validation/test split, leakage, baseline, features, metrics, error analysis.
+#### Day 15 — Kubernetes (K8s) 核心編排
+- **📖 學習內容 (Learn)**: Cluster, Pod, Deployment, Service, ConfigMap, Secret 核心概念。
+- **🔨 程式實作 (Build)**: 將 API 部署至 local K8s (kind / minikube)。
+- **✅ 驗證方式 (Verify)**: 執行 `kubectl get pods,svc` 驗證 API 與 DB 順利部署至 Kubernetes 叢集。
+- **🗣️ 面試考點 (Explain)**: 說明 Kubernetes 的 desired state (期望狀態) 與 reconciliation loop (調和循環)。
 
-Create anomaly-detection baseline from telemetry.
+#### Day 16 — K8s 健康檢查 (Probes) 與優雅關機
+- **📖 學習內容 (Learn)**: Liveness, Readiness, Startup Probes 運作機制與 SIGTERM 訊號處理。
+- **🔨 程式實作 (Build)**: 配置探針與 Pod 優雅關機。
+- **✅ 驗證方式 (Verify)**: 模擬 API 端點死鎖，觀察 Kubernetes Readiness/Liveness Probes 自動觸發容器重啟。
+- **🗣️ 面試考點 (Explain)**: 說明 Liveness Probe 與 Readiness Probe 的差異與配置失誤後果。
 
-### Day 25 — Model serving (4h)
-Learn online vs batch inference, model serialization, feature consistency, inference latency.
+#### Day 17 — K8s 自動擴縮 (HPA) 與資源配額
+- **📖 學習內容 (Learn)**: Horizontal Pod Autoscaler (HPA)、CPU/Memory Requests & Limits。
+- **🔨 程式實作 (Build)**: 設定 HPA 並使用高併發流量觸發 Pod 自動擴展。
+- **✅ 驗證方式 (Verify)**: 使用壓測工具灌入流量，執行 `kubectl get hpa` 驗證 Pod 數量從 1 自動擴展至 5。
+- **🗣️ 面試考點 (Explain)**: 說明為什麼在 Kubernetes 中必須設定 Resource Requests 與 Limits。
 
-Expose `/predict` in an ML service.
+#### Day 18 — Service Mesh (Istio) 流量管理與金絲雀部署
+- **📖 學習內容 (Learn)**: Istio Envoy Sidecar, VirtualService, DestinationRule, Canary Deployment (金絲雀發布) 與 Circuit Breaker (斷路器)。
+- **🔨 程式實作 (Build)**: 設定 Istio 將 10% 流量導入新版 API。
+- **✅ 驗證方式 (Verify)**: 配置 Istio VirtualService，連發 100 次請求驗證 10% 流量精準分流至 Canary 新版。
+- **🗣️ 面試考點 (Explain)**: 說明 Service Mesh 在微服務架構中扮演的角色與價值。
 
-### Day 26 — Model lifecycle / MLflow (4h)
-Learn experiment tracking, model registry, artifact, versioning, reproducibility.
+#### Day 19 — GitOps (ArgoCD) 與 Helm/Kustomize 包裹
+- **📖 學習內容 (Learn)**: GitOps 聲明式部署、Single Source of Truth 理念、ArgoCD 狀態調和。
+- **🔨 程式實作 (Build)**: 使用 Helm/Kustomize 包裹 K8s 清單，設定 ArgoCD 自動同步 Git 變更。
+- **✅ 驗證方式 (Verify)**: 修改 Git 倉庫的 K8s 清單並 push，觀察 ArgoCD 控制台自動同步至 K8s 實體叢集。
+- **🗣️ 面試考點 (Explain)**: 說明 GitOps 比起傳統腳本部署在可稽核性與 Rollback 上的優勢。
 
-Track model experiments and register the selected model.
+#### Day 20 — CI/CD 自動化 Toolchain (GitHub Actions)
+- **📖 學習內容 (Learn)**: CI vs CD、Quality Gates、Immutable Build Artifacts。
+- **🔨 程式實作 (Build)**: 建立 GitHub Actions Workflow (Lint ➔ Pytest ➔ Docker Build ➔ ArgoCD Trigger)。
+- **✅ 驗證方式 (Verify)**: 提交 GitHub PR，驗證 Actions 綠燈觸發 (Lint ➔ Pytest ➔ Docker Build ➔ ArgoCD)。
+- **🗣️ 面試考點 (Explain)**: 說明不可變產物 (Immutable Artifacts) 在 CI/CD 流程中的安全性。
 
-### Day 27 — MLOps quality (4h)
-Learn data drift, concept drift, model monitoring, retraining trigger, feature quality.
+#### Day 21 — SRE 可觀測性 (Prometheus & PromQL)
+- **📖 學習內容 (Learn)**: RED (Rate, Errors, Duration) 與 USE 監控方法學、PromQL 查詢語言。
+- **🔨 程式實作 (Build)**: 在 FastAPI 埋點 `/metrics`，使用 Prometheus 抓取 API 延遲與錯誤率。
+- **✅ 驗證方式 (Verify)**: 存取 `http://localhost:9090`，使用 PromQL 查詢 `rate(http_requests_total[5m])` 延遲曲線。
+- **🗣️ 面試考點 (Explain)**: 說明 Pull 模型 (Prometheus) 與 Push 模型監控架構的比較。
 
-Add model metrics and a drift-check job.
+#### Day 22 — Grafana 視覺化 Dashboard & Alertmanager
+- **📖 學習內容 (Learn)**: Dashboard 設計原則、Alerting 告警觸發規則與 Alertmanager。
+- **🔨 程式實作 (Build)**: 建立高顏值 Grafana 控制台，設定 Alertmanager 當 5xx 錯誤率 > 1% 時發送 Slack/Email 告警。
+- **✅ 驗證方式 (Verify)**: 開啟 Grafana 控制台，故意引發 5xx 錯誤，驗證 Alertmanager 成功發送 Slack 告警。
+- **🗣️ 面試考點 (Explain)**: 說明警報疲勞 (Alert Fatigue) 的成因與預防告警雜訊的方法。
 
-### Day 28 — GitOps / Argo CD (4h)
-Learn desired-state deployment, reconciliation loop, Git as source of truth.
-
-Create Kubernetes manifests or Helm/Kustomize structure managed through Git.
-
-### Day 29 — Production incident exercise (4h)
-Simulate latency/errors/dependency failure.
-
-Use dashboard + logs + SLO to diagnose; write a mini postmortem.
-
-### Day 30 — Portfolio + interview demo (4h)
-- clean README
-- final architecture diagram
-- record demo flow
-- document design decisions and tradeoffs
-- prepare 15 interview questions and answers
-- compare final architecture with Day 1 monolith
+#### Day 23 — SRE SLI/SLO/SLA 與 Error Budget 扣減
+- **📖 學習內容 (Learn)**: SLI (指標), SLO (目標), SLA (協議) 與 Error Budget 殘餘預算計算。
+- **🔨 程式實作 (Build)**: 定義「API 成功率 >= 99.9%」與「p95 延遲 < 200ms」之 SLO，建立 Error Budget 燃燒率儀表板。
+- **✅ 驗證方式 (Verify)**: 查看 Grafana SLO 面板，驗證 7 天滾動可用性 (>=99.9%) 與 Error Budget 燃燒率計算。
+- **🗣️ 面試考點 (Explain)**: 說明 Error Budget 如何平衡軟體新功能開發與系統穩定度。
 
 ---
 
-# Core Knowledge Checklist
+### 📌 第四週：AI/MLOps 平台、物件儲存 (MinIO/Cassandra)、研報自動化與生產故障演練
 
-## Programming
-- Python syntax and type hints
-- OOP and composition
-- exception handling
-- async/await basics
-- data structures and Big-O
+#### Day 24 — S3 / MinIO 物件儲存與數據治理
+- **📖 學習內容 (Learn)**: Unstructured Data 物件儲存、S3 API、Metadata 數據治理與品質管理。
+- **🔨 程式實作 (Build)**: 部署 MinIO，儲存原始貼文數據與 AI 模型權重檔 (Artifacts)。
+- **✅ 驗證方式 (Verify)**: 透過 Python SDK (boto3) 上傳與讀取 MinIO 中的貼文資料與模型 Artifacts 物件。
+- **🗣️ 面試考點 (Explain)**: 說明 Block Storage, File Storage 與 Object Storage 的架構適用性。
 
-## Backend
-- HTTP/REST
-- API design
-- validation
-- dependency injection
-- SQL and transactions
-- caching
-- background processing
+#### Day 25 — AI/ML 生命週期與特徵工程 (Feature Pipeline)
+- **📖 學習內容 (Learn)**: ML 生命週期（數據收集 ➔ 探索 EDA ➔ 特徵工程 ➔ 訓練 ➔ 評估）、Data Drift (資料偏移)。
+- **🔨 程式實作 (Build)**: 建立 NLP 情感分析特徵管道，計算 Sentiment Vector 並監控數據偏移。
+- **✅ 驗證方式 (Verify)**: 執行 Data Drift 檢測腳本，輸出 KS-test 數據偏移統計結果與特徵矩陣。
+- **🗣️ 面試考點 (Explain)**: 說明 Data Drift 與 Concept Drift 的差異及其對生產模型效能的影響。
 
-## Software Engineering
-- Git
-- testing pyramid
-- SOLID
-- clean boundaries
-- refactoring
-- code review mindset
-- 12-factor application
+#### Day 26 — MLOps / MLflow 模型註冊與管理 (Model Registry)
+- **📖 學習內容 (Learn)**: Experiment Tracking (實驗追蹤)、Model Registry (模型註冊庫)、版本控管與可重複性。
+- **🔨 程式實作 (Build)**: 使用 MLflow 記錄模型參數、AUC/Accuracy 指標並註冊 Selected Model。
+- **✅ 驗證方式 (Verify)**: 存取 `http://localhost:5000` (MLflow UI)，驗證模型實驗追蹤、AUC 指標與 Selected 版本註冊。
+- **🗣️ 面試考點 (Explain)**: 說明 MLflow 如何保障 ML 模型的試驗可追蹤性與可重複訓練。
 
-## DevOps / Cloud Native
-- Linux/process/network basics
-- Docker
-- Compose
-- CI/CD
-- Kubernetes
-- configuration/secrets
-- probes/resources/autoscaling
+#### Day 27 — 線上 AI 推論服務 (Online Model Serving API)
+- **📖 學習內容 (Learn)**: Online Inference 延遲優化、Model Serialization、符合 SLO 的高可用推論。
+- **🔨 程式實作 (Build)**: 公開 `/api/v1/predict` 端點，載入 MLflow 註冊的模型進行實時推論。
+- **✅ 驗證方式 (Verify)**: 發送 POST 至 `/api/v1/predict`，驗證 AI 即時回傳情感分類與預測信心分數。
+- **🗣️ 面試考點 (Explain)**: 說明 Online Real-time Inference 與 Batch Offline Inference 在延遲要求上的權衡。
 
-## SRE
-- availability
-- latency
-- throughput
-- errors
-- observability
-- SLI/SLO/SLA
-- error budget
-- alert design
-- incident response
+#### Day 28 — 高管 PDF 商業研報與現代化 Web 控制台
+- **📖 學習內容 (Learn)**: 資料視覺化、使用者體驗 (UX) 第一印象 (WOW Factor)、PDF 動態渲染。
+- **🔨 程式實作 (Build)**: 實作 `/api/v1/reports/html/{id}` 自動生成 PDF 研報；建置深色系 ECharts 市場調查 Dashboard。
+- **✅ 驗證方式 (Verify)**: 瀏覽器開啟 `http://127.0.0.1:8000/` 體驗儀表板，並存取 `/api/v1/reports/html/K-001` 下載 PDF 研報。
+- **🗣️ 面試考點 (Explain)**: 說明全棧數據可視化面板在展現產品商業價值時的重要性。
 
-## Data Engineering
-- SQL/NoSQL tradeoffs
-- batch vs stream
-- ETL/ELT
-- object storage
-- schema/data quality
-- pipeline reliability
+#### Day 29 — 生產環境故障演練 (Production Incident Exercise)
+- **📖 學習內容 (Learn)**: Chaos Engineering 故障注入、故障排除流程與 Postmortem 復盤報告撰寫。
+- **🔨 程式實作 (Build)**: 注入 500ms 網路延遲與 Redis 連線中斷，利用 Grafana + 日誌定位根因並完成復原。
+- **✅ 驗證方式 (Verify)**: 注入 500ms 網路延遲與 Redis 中斷，使用 Grafana + 日誌定位根因並撰寫事故 Postmortem。
+- **🗣️ 面試考點 (Explain)**: 說明如何在故障發生時進行根因分析 (RCA - Root Cause Analysis)。
 
-## AI / MLOps
-- ML problem framing
-- feature engineering
-- evaluation/error analysis
-- model serving
-- experiment tracking
-- model registry
-- drift
-- retraining
-
-# Recommended official resources
-
-Use official documentation first; tutorials are for targeted gaps.
-
-- Python: https://docs.python.org/3/tutorial/
-- FastAPI: https://fastapi.tiangolo.com/tutorial/
-- PostgreSQL Tutorial: https://www.postgresql.org/docs/current/tutorial.html
-- pytest: https://docs.pytest.org/
-- Twelve-Factor App: https://12factor.net/
-- Docker: https://docs.docker.com/get-started/
-- Redis: https://redis.io/docs/latest/
-- Kubernetes: https://kubernetes.io/docs/tutorials/
-- GitHub Actions: https://docs.github.com/actions
-- Prometheus: https://prometheus.io/docs/introduction/overview/
-- Grafana: https://grafana.com/docs/
-- MLflow: https://mlflow.org/docs/latest/
-- MinIO: https://min.io/docs/minio/container/index.html
-- Argo CD: https://argo-cd.readthedocs.io/en/stable/getting_started/
+#### Day 30 — 專案封裝、技術展演與履歷/面試 Demo
+- **📖 學習內容 (Learn)**: 如何向面試官精準展示架構權衡 (Tradeoffs) 與個人專案亮點。
+- **🔨 程式實作 (Build)**: 整理最終版 README (繁體中文)、架構演進圖，錄製 Demo 影片，對照 5 大 JDs 自我模擬面試答辯。
+- **✅ 驗證方式 (Verify)**: 錄製完整 Demo 影片、對照 5 大 JDs 自我模擬面試答辯，達成 100% Portfolio-Ready。
+- **🗣️ 面試考點 (Explain)**: 針對 5 大 JDs 提出之核心考點進行流利答辯。
