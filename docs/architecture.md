@@ -1,88 +1,85 @@
-# Architecture
+# 系統架構演進 (Architecture Evolution)
 
-## Purpose
+本專案的架構設計採取**漸進式演進 (Evolutionary Architecture)** 策略。每個階段皆旨在示範如何從單體架構，演進為支援商業市場調查與網路輿情分析的高擴展性雲原生 SaaS 平台。
 
-The platform models a factory-monitoring workflow: sensor readings enter the
-system, are stored and analysed, and can produce operator alerts. A later ML
-path provides predictions or anomaly scores through a versioned inference API.
+---
 
-The architecture is designed to teach delivery skills in a sequence that keeps
-each stage demonstrable and testable.
-
-## Evolution plan
-
-| Stage | Primary outcome | Boundary |
-| --- | --- | --- |
-| 1. Modular monolith | REST API, SQL persistence, validation, tests | `apps/api` modules |
-| 2. Containerised app | Reproducible local runtime | `infrastructure/docker` |
-| 3. Delivery baseline | Automated lint and test checks | `.github/workflows` |
-| 4. Resilience and extraction | Redis usage and service contracts | `services/` |
-| 5. Kubernetes platform | Deployable workloads, config, probes | `infrastructure/kubernetes` and `helm` |
-| 6. Observability and SRE | Metrics, dashboards, SLI/SLO, alerts | `observability/` and `docs/sli-slo.md` |
-| 7. Data and ML | Validated data flow and inference API | `data/pipeline` and `services/ml-service` |
-| 8. GitOps | Declarative promotion and drift visibility | `infrastructure/argocd` |
-
-## Day 1 logical design
-
-The first API is a modular monolith with explicit domain modules:
-
-- `sensors`: sensor identity, metadata, and status
-- `readings`: timestamped measurements and validation
-- `analytics`: aggregations and anomaly candidates
-- `alerts`: alert state, severity, acknowledgement, and notification intent
-- `health`: liveness, readiness, and dependency checks
-
-The API owns the initial write path and SQL transaction boundary. A future
-event contract will allow sensor ingestion and analytics to be extracted
-without changing the operator-facing API contract.
-
-## Proposed request flow
+## 階段 1 — 生產級單體架構 (Production-Shaped Monolith)
 
 ```text
-sensor or simulator
-        |
-        v
-POST /api/v1/readings  --> validation --> SQL transaction
-                                      |
-                                      +--> analytics candidate
-                                      +--> alert decision
-                                      +--> metrics
+Client (客戶端/分析師)
+  |
+FastAPI (網頁框架)
+  |
+Router -> Service -> Repository
+                     |
+                 PostgreSQL (市場調查與聲量資料庫)
 ```
 
-The first version may execute analytics synchronously for clarity. Background
-processing and Redis-backed idempotency are introduced only after the baseline
-behaviour is covered by tests.
+**學習重點 (Key Learnings)**:
+- HTTP / REST API 設計規範與狀態碼
+- 分層架構 (Layering) 與依賴邊界 (Dependency Boundaries)
+- SQL 查詢與事務管理 (Transactions)
+- 自動化測試 (Unit / Integration Tests)
+- 12-Factor 環境配置 (Configuration Management)
 
-## Data ownership
+---
 
-| Data | Initial owner | Future owner |
-| --- | --- | --- |
-| Sensor metadata | API / SQL | Sensor service |
-| Raw readings | API / SQL | Sensor service or ingestion store |
-| Aggregates | API / SQL | Analytics service |
-| Alert lifecycle | API / SQL | Alert service |
-| Features and model metadata | Data/ML modules | ML platform boundary |
+## 階段 2 — 容器化與商業化 SaaS 模組 (Containerized Application & SaaS Core)
 
-No real factory data, credentials, model binaries, or secrets belong in this
-repository. Examples and fixtures must be synthetic or openly redistributable.
+```text
+Docker Compose
+├── API (FastAPI Gateway)
+├── PostgreSQL (主資料庫)
+├── Redis (熱門關鍵字快取與 Rate Limit)
+└── Stripe Billing Integration
+```
 
-## Non-functional requirements
+**學習重點 (Key Learnings)**:
+- 多租戶隔離 (Multi-Tenancy Isolation)
+- Stripe 金流 API 與按用量計費 (Usage-based Billing)
+- API Key 鑑權與權限控管 (RBAC)
+- 容器化部署與 Redis 快取策略
 
-- API contracts are versioned under `/api/v1`.
-- Invalid input fails with a stable error shape and does not partially commit.
-- Health endpoints distinguish process liveness from dependency readiness.
-- Tests run without external cloud services.
-- Metrics expose request count, latency, errors, and dependency failures.
-- Every asynchronous boundary has an idempotency and retry story before it is
-  considered production-shaped.
+---
 
-## Open decisions
+## 階段 3 — 數據收集與 AI 商業情報 (Data Collection & AI Analytics Platform)
 
-- PostgreSQL versus another SQL engine for the first deployed environment
-- Event transport after the synchronous baseline (Redis Streams, a broker, or
-  an in-process outbox)
-- UI framework and authentication model
-- Model family, feature store approach, and model registry
+```text
+Public APIs / Web Scraper -> Feature Pipeline -> PostgreSQL
+                                  |                 |
+                                  v                 v
+                       NLP Sentiment Engine ---> Executive PDF Report Generator
+```
 
-These decisions should be made in ADRs when implementation evidence requires
-them, rather than being hidden in configuration.
+**學習重點 (Key Learnings)**:
+- 網路公開數據抓取 (Scraper Ingestion)
+- AI NLP 情感分析與負面輿情預警
+- 自動化 PDF 商業市場研報生成 (Report Generator)
+
+---
+
+## 階段 4 — Kubernetes 叢集與 SRE 可觀測性 (Kubernetes & SRE)
+
+```text
+Kubernetes Cluster
+├── Gateway Deployment + Service
+├── Scraper Worker Deployment
+├── AI Analytics Deployment
+├── ConfigMaps / Secrets
+└── HPA (自動擴縮) / Health Probes (健康檢查)
+```
+
+---
+
+## 階段 5 — CI/CD 與 GitOps 自動化 (CI/CD & GitOps)
+
+```text
+Developer -> GitHub PR
+               |
+          GitHub Actions (Lint -> Test -> Build Image)
+               |
+            Argo CD (GitOps Controller)
+               |
+          Kubernetes Cluster
+```

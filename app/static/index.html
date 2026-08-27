@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Intelligence Cloud-Native SaaS Platform</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Chart.js & FontAwesome CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --card-bg: rgba(18, 25, 41, 0.75);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --accent-blue: #38bdf8;
+            --accent-cyan: #06b6d4;
+            --accent-purple: #8b5cf6;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', -apple-system, sans-serif; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.12) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+        }
+
+        header {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38bdf8, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tenant-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .badge-chip {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .plan-free { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+        .plan-pro { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); }
+        .plan-enterprise { background: rgba(139, 92, 246, 0.2); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.4); }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 40px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        .full-width { grid-column: span 2; }
+
+        .card { padding: 24px; }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .keywords-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .keyword-card {
+            padding: 18px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .keyword-card:hover, .keyword-card.active {
+            border-color: var(--accent-blue);
+            background: rgba(56, 189, 248, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #38bdf8, #0284c7);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+        }
+
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover { background: rgba(255, 255, 255, 0.05); }
+
+        .code-block {
+            background: #050811;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: #38bdf8;
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            word-break: break-all;
+        }
+
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .plan-card {
+            padding: 24px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .plan-card.featured {
+            border-color: var(--accent-blue);
+            background: rgba(56, 189, 248, 0.05);
+        }
+
+        .plan-price { font-size: 32px; font-weight: 700; margin: 16px 0; }
+
+        .feature-list { list-style: none; margin: 16px 0; font-size: 13px; color: var(--text-secondary); }
+        .feature-list li { margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .feature-list i { color: #10b981; }
+
+        .progress-bar-bg {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #8b5cf6);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="glass">
+        <div class="logo">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Market Intelligence SaaS Platform</span>
+        </div>
+        <div class="tenant-badge">
+            <i class="fa-solid fa-building" style="color: #38bdf8;"></i>
+            <span id="tenant-name">Vanguard Market Research</span>
+            <span id="tenant-plan-chip" class="badge-chip plan-free">FREE TIER</span>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Left Main Panel: Market Trend Waveform & Keywords List -->
+        <div class="card glass">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fa-solid fa-magnifying-glass-chart" style="color: #38bdf8;"></i>
+                    <span>網路公開聲量與消費者情緒分析 (Real-time Market Trends)</span>
+                </div>
+                <button class="btn btn-primary" onclick="simulateDataScrape()">
+                    <i class="fa-solid fa-rotate"></i> 發送 Market API 抓取聲量
+                </button>
+            </div>
+            
+            <div style="height: 260px; position: relative;">
+                <canvas id="marketChart"></canvas>
+            </div>
+
+            <div style="margin-top: 24px;">
+                <h4 style="margin-bottom: 12px; font-size: 15px; color: var(--text-secondary);">熱門市場追蹤關鍵字 (Select Market Topic)</h4>
+                <div class="keywords-grid" id="keywords-container">
+                    <!-- Keywords rendered dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side Panel: AI Insights & SaaS Billing -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+
+            <!-- AI Market Insights Card -->
+            <div class="card glass">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fa-solid fa-wand-magic-sparkles" style="color: #8b5cf6;"></i>
+                        <span>AI 商業顧問診斷</span>
+                    </div>
+                </div>
+
+                <div style="text-align: center; padding: 12px 0;">
+                    <div style="font-size: 12px; color: var(--text-secondary);">淨情緒指數 (Net Sentiment)</div>
+                    <div class="stat-value" id="ai-sentiment-value" style="color: #38bdf8; font-size: 36px; margin: 4px 0;">+0.58</div>
+                    <div id="ai-health-chip" style="font-size: 12px; color: #10b981; font-weight: 600;">【市場熱潮】正面口碑持續發酵</div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.02); padding: 14px; border-radius: 10px; border: 1px solid var(--border-color); margin-top: 12px;">
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">💡 AI 商業策略處方</div>
+                    <div id="ai-advice-text" style="font-size: 13px; line-height: 1.5; color: #e2e8f0;">
+                        【口碑強勁】正面情緒佔比過半！建議加大數位廣告投放與社群網紅行銷曝光。
+                    </div>
+                </div>
+
+                <div style="margin-top: 16px;">
+                    <button class="btn btn-outline" style="width: 100%; justify-content: center;" onclick="openAuditReport()">
+                        <i class="fa-solid fa-file-pdf" style="color: #ef4444;"></i> 查看高管商業 PDF 研報
+                    </button>
+                </div>
+            </div>
+
+            <!-- SaaS Subscription & Quota Card -->
+            <div class="card glass">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fa-solid fa-credit-card" style="color: #10b981;"></i>
+                        <span>API 配額與付費訂閱</span>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                        <span>本月 API 呼叫配額</span>
+                        <span id="quota-text">18 / 100 次</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="quota-progress"></div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 16px;">
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;">B2B API Key (用於數據數據拋轉)</div>
+                    <div class="code-block">
+                        <span id="api-key-text">mk_live_demo_key_8899</span>
+                        <i class="fa-regular fa-copy" style="cursor: pointer;" onclick="copyApiKey()"></i>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="openPlansModal()">
+                        <i class="fa-solid fa-bolt"></i> 升級至 Pro / Enterprise 方案
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Full Width: SaaS Pricing Tiers Modal/Panel -->
+        <div class="card glass full-width" id="plans-modal" style="display: none;">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fa-solid fa-rocket" style="color: #38bdf8;"></i>
+                    <span>選擇適合您企業規模的市場調查 SaaS 訂閱方案</span>
+                </div>
+                <button class="btn btn-outline" onclick="closePlansModal()">關閉</button>
+            </div>
+
+            <div class="plans-grid" id="plans-container">
+                <!-- Subscription plans rendered dynamically -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentKeywordId = 'K-001';
+        let marketChart = null;
+        let chartData = { labels: [], mentions: [], sentiment: [] };
+
+        function initChart() {
+            const ctx = document.getElementById('marketChart').getContext('2d');
+            marketChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [
+                        {
+                            label: '網路討論聲量 (Mentions)',
+                            data: chartData.mentions,
+                            borderColor: '#38bdf8',
+                            backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: '淨情緒指數 (Sentiment Index)',
+                            data: chartData.sentiment,
+                            borderColor: '#8b5cf6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#f8fafc' } }
+                    }
+                }
+            });
+        }
+
+        async function fetchKeywords() {
+            try {
+                const res = await fetch('/api/v1/market/keywords');
+                const list = await res.json();
+                const container = document.getElementById('keywords-container');
+                container.innerHTML = '';
+
+                list.forEach(k => {
+                    const card = document.createElement('div');
+                    card.className = `keyword-card ${k.id === currentKeywordId ? 'active' : ''}`;
+                    card.onclick = () => selectKeyword(k.id);
+                    card.innerHTML = `
+                        <div style="font-weight: 600; font-size: 15px; margin-bottom: 4px;">${k.keyword}</div>
+                        <div style="font-size: 12px; color: #94a3b8; margin-bottom: 10px;">分類: ${k.category}</div>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                            <div>
+                                <div style="font-size: 11px; color: #94a3b8;">總聲量</div>
+                                <div style="font-size: 16px; font-weight: 700; color: #38bdf8; font-family: 'JetBrains Mono';">${k.mentions_count.toLocaleString()}</div>
+                            </div>
+                            <div style="font-size: 12px;">
+                                情緒: <strong>${k.sentiment_score > 0 ? '+' : ''}${k.sentiment_score}</strong>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                console.error("Failed to fetch keywords:", err);
+            }
+        }
+
+        async function selectKeyword(id) {
+            currentKeywordId = id;
+            await fetchKeywords();
+            
+            try {
+                const res = await fetch(`/api/v1/market/sentiment/${id}`);
+                if (res.status === 402) {
+                    const err = await res.json();
+                    alert(err.detail);
+                    openPlansModal();
+                    return;
+                }
+                const data = await res.json();
+                document.getElementById('ai-sentiment-value').innerText = (data.sentiment_index > 0 ? '+' : '') + data.sentiment_index;
+                document.getElementById('ai-health-chip').innerText = data.health_label;
+                document.getElementById('ai-advice-text').innerText = data.ai_advice;
+
+                // Push to Chart
+                const now = new Date().toLocaleTimeString();
+                chartData.labels.push(now);
+                chartData.mentions.push(data.mentions_count);
+                chartData.sentiment.push(data.sentiment_index * 1000); // Scaled for visualization
+                if (chartData.labels.length > 10) {
+                    chartData.labels.shift();
+                    chartData.mentions.shift();
+                    chartData.sentiment.shift();
+                }
+                marketChart.update();
+
+                fetchUsage();
+            } catch (err) {
+                console.error("Analysis error:", err);
+            }
+        }
+
+        async function simulateDataScrape() {
+            await selectKeyword(currentKeywordId);
+        }
+
+        async function fetchUsage() {
+            try {
+                const res = await fetch('/api/v1/billing/usage');
+                const usage = await res.json();
+
+                document.getElementById('tenant-name').innerText = usage.tenant_name;
+                document.getElementById('api-key-text').innerText = usage.api_key;
+                document.getElementById('quota-text').innerText = `${usage.usage_count} / ${usage.quota_limit} 次`;
+                document.getElementById('quota-progress').style.width = `${Math.min(100, usage.usage_percentage)}%`;
+
+                const chip = document.getElementById('tenant-plan-chip');
+                chip.innerText = usage.plan.toUpperCase() + ' TIER';
+                chip.className = `badge-chip plan-${usage.plan}`;
+            } catch (err) {
+                console.error("Failed to fetch usage:", err);
+            }
+        }
+
+        async function fetchPlans() {
+            try {
+                const res = await fetch('/api/v1/billing/plans');
+                const plans = await res.json();
+                const container = document.getElementById('plans-container');
+                container.innerHTML = '';
+
+                plans.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = `plan-card ${p.tier === 'pro' ? 'featured' : ''}`;
+                    card.innerHTML = `
+                        <div>
+                            <div style="font-weight: 700; font-size: 18px;">${p.name}</div>
+                            <div class="plan-price">$${p.price_usd_monthly} <span style="font-size: 14px; font-weight: 400; color: #94a3b8;">/ 月</span></div>
+                            <ul class="feature-list">
+                                ${p.features.map(f => `<li><i class="fa-solid fa-check"></i> ${f}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <button class="btn ${p.tier === 'pro' ? 'btn-primary' : 'btn-outline'}" style="margin-top: 16px; justify-content: center;" onclick="subscribeTier('${p.tier}')">
+                            訂閱升級至 ${p.tier.toUpperCase()}
+                        </button>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                console.error("Failed to fetch plans:", err);
+            }
+        }
+
+        async function subscribeTier(tier) {
+            try {
+                const res = await fetch('/api/v1/billing/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target_tier: tier })
+                });
+                const data = await res.json();
+                alert(data.message);
+                closePlansModal();
+                fetchUsage();
+            } catch (err) {
+                alert("訂閱失敗，請重試。");
+            }
+        }
+
+        function openPlansModal() {
+            fetchPlans();
+            document.getElementById('plans-modal').style.display = 'block';
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function closePlansModal() {
+            document.getElementById('plans-modal').style.display = 'none';
+        }
+
+        function copyApiKey() {
+            const keyText = document.getElementById('api-key-text').innerText;
+            navigator.clipboard.writeText(keyText);
+            alert("API Key 已複製到剪貼簿！");
+        }
+
+        function openAuditReport() {
+            window.open(`/api/v1/reports/html/${currentKeywordId}`, '_blank');
+        }
+
+        window.onload = () => {
+            initChart();
+            fetchKeywords();
+            fetchUsage();
+        };
+    </script>
+</body>
+</html>
