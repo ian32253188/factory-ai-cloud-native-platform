@@ -7,6 +7,7 @@ from app.api.health import router as health_router
 from app.api.market import router as market_router
 from app.api.billing import router as billing_router
 from app.api.reports import router as reports_router
+from app.api.keywords import router as keywords_router
 from app.core.config import settings
 
 
@@ -21,6 +22,7 @@ def create_app() -> FastAPI:
     app.include_router(market_router)
     app.include_router(billing_router)
     app.include_router(reports_router)
+    app.include_router(keywords_router)
 
     # Mount Static Files for Web SaaS Dashboard
     static_dir = os.path.join(os.path.dirname(__file__), "static")

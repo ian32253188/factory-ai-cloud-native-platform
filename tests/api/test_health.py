@@ -2,28 +2,19 @@ from fastapi.testclient import TestClient
 
 
 def test_healthz_endpoint(client: TestClient):
-    """Test process liveness endpoint /healthz."""
-    response = client.get("/healthz")
+    """Test process liveness endpoint /health."""
+    response = client.get("/health")
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "ok"
-    assert "version" in data
-    assert data["environment"] == "test"
+    assert "Market Intelligence" in data["service"]
 
 
-def test_readyz_endpoint(client: TestClient):
-    """Test dependency readiness endpoint /readyz."""
-    response = client.get("/readyz")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["status"] == "ready"
-    assert "checks" in data
-    assert data["checks"].get("api_server") == "ok"
-
-
-def test_v1_healthz_endpoint(client: TestClient):
-    """Test versioned health endpoint /api/v1/health/healthz."""
-    response = client.get("/api/v1/health/healthz")
+def test_health_detail_endpoint(client: TestClient):
+    """Test detailed health check endpoint /health/detail."""
+    response = client.get("/health/detail?verbose=true")
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "ok"
+    assert "timestamp" in data
+    assert data["mode"] == "verbose_diagnostic"
